@@ -112,6 +112,21 @@
   .hover\:text-ud-orange:hover {
     color: var(--ud-orange);
   }
+
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
 }
 
 /* Custom animations */
@@ -172,4 +187,67 @@
 
 .mobile-menu.active {
   transform: translateX(0);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Banner hover effects */
+.banner-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* News card hover effects */
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Ad banner shimmer effect */
+.ad-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer-wave 2s infinite;
+}
+
+@keyframes shimmer-wave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .banner-mobile {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .ad-banner,
+  .sidebar-banner,
+  .news-ticker {
+    display: none !important;
+  }
 }

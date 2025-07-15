@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatTimeAgo } from "@/lib/constants";
 import type { Article, Category } from "@shared/schema";
+import { SidebarNewsBanner } from "@/components/banners/sidebar-news-banner";
+import { SidebarAdBanner, HeaderAdBanner, MobileAdBanner } from "@/components/banners/google-ad-banner";
+import { NewsPromotionBanner, WeatherBanner, SocialMediaBanner } from "@/components/banners/news-promotion-banner";
 
 export default function Home() {
   const { data: featuredArticle } = useQuery<Article>({
@@ -35,6 +38,11 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <BreakingTicker />
       <CategoryTabs />
+
+      {/* Header Advertisement */}
+      <div className="container mx-auto px-4 py-4">
+        <HeaderAdBanner />
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -77,10 +85,27 @@ export default function Home() {
                 </Button>
               </div>
             </section>
+            
+            {/* Content Ad Banner */}
+            <div className="mb-8">
+              <HeaderAdBanner />
+            </div>
           </div>
 
           {/* Sidebar */}
           <aside className="lg:col-span-1">
+            
+            {/* Mobile Ad Banner */}
+            <MobileAdBanner />
+            
+            {/* Sidebar News Banner */}
+            <SidebarNewsBanner />
+            
+            {/* Sidebar Ad Banner */}
+            <SidebarAdBanner />
+            
+            {/* News Promotion Banner */}
+            <NewsPromotionBanner />
             
             {/* Trending News */}
             <Card className="mb-6">
@@ -120,119 +145,13 @@ export default function Home() {
             </Card>
 
             {/* Weather Widget */}
-            <Card className="bg-gradient-to-br from-blue-400 to-blue-600 text-white mb-6">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-4">🌤️ สภาพอากาศ (อุดรธานี)</h3>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">30°C</div>
-          
-                  <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="text-center">
-                      <div className="font-medium">พรุ่งนี้</div>
-                      <div className="opacity-90">☀️ 32°C</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">มะรืนนี้</div>
-                      <div className="opacity-90">🌧️ 27°C</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">เสาร์</div>
-                      <div className="opacity-90">⛅ 30°C</div>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold mt-6 mb-4">🌤️ สภาพอากาศ (กรุงเทพ)</h3>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">34°C</div>
-          
-                  <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="text-center">
-                      <div className="font-medium">พรุ่งนี้</div>
-                      <div className="opacity-90">☀️ 35°C</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">มะรืนนี้</div>
-                      <div className="opacity-90">🌤️ 32°C</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">เสาร์</div>
-                      <div className="opacity-90">☀️ 33°C</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Weather Widget */}
-            <Card className="bg-gradient-to-br from-blue-400 to-blue-600 text-white mb-6">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-4">🌧️ โอกาสเกิดฝน (อุดรธานี)</h3>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">40%</div>
-
-                  <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="text-center">
-                      <div className="font-medium">พรุ่งนี้</div>
-                      <div className="opacity-90">🌧️ 60%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">มะรืนนี้</div>
-                      <div className="opacity-90">🌧️ 80%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">เสาร์</div>
-                      <div className="opacity-90">☀️ 20%</div>
-                    </div>
-                  </div>
-                </div>
-                  <h3 className="text-lg font-bold mt-6 mb-4">🌧️ โอกาสเกิดฝน (กรุงเทพ)</h3>
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">10%</div>
-
-                  <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="text-center">
-                      <div className="font-medium">พรุ่งนี้</div>
-                      <div className="opacity-90">☀️ 0%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">มะรืนนี้</div>
-                      <div className="opacity-90">🌧️ 30%</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">เสาร์</div>
-                      <div className="opacity-90">☀️ 10%</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
+            <WeatherBanner />
+            
+            {/* Another Ad Banner */}
+            <SidebarAdBanner />
+            
             {/* Social Media */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-900 pb-2 border-b-2 border-ud-orange">
-                  📱 ติดตามเรา
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <a href="#" className="flex items-center space-x-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors duration-300">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">f</div>
-                  <span className="font-medium text-gray-700">Facebook</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors duration-300">
-                  <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white text-sm font-bold">T</div>
-                  <span className="font-medium text-gray-700">Twitter</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 p-3 rounded-lg bg-pink-50 hover:bg-pink-100 transition-colors duration-300">
-                  <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">IG</div>
-                  <span className="font-medium text-gray-700">Instagram</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors duration-300">
-                  <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-bold">YT</div>
-                  <span className="font-medium text-gray-700">YouTube</span>
-                </a>
-              </CardContent>
-            </Card>
+            <SocialMediaBanner />
 
           </aside>
 

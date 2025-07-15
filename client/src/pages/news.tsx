@@ -6,6 +6,9 @@ import { NewsCard } from "@/components/news/news-card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Article, Category } from "@shared/schema";
+import { HeaderAdBanner, SidebarAdBanner } from "@/components/banners/google-ad-banner";
+import { SidebarNewsBanner } from "@/components/banners/sidebar-news-banner";
+import { WeatherBanner, NewsPromotionBanner } from "@/components/banners/news-promotion-banner";
 
 export default function News() {
   const [sortBy, setSortBy] = useState<string>("latest");
@@ -47,28 +50,37 @@ export default function News() {
     <div className="min-h-screen bg-gray-50">
       <BreakingTicker />
       <CategoryTabs />
+      
+      {/* Header Advertisement */}
+      <div className="container mx-auto px-4 py-4">
+        <HeaderAdBanner />
+      </div>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4 md:mb-0">ข่าวสารทั้งหมด</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">เรียงตาม:</span>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="latest">ล่าสุด</SelectItem>
-                <SelectItem value="views">ยอดนิยม</SelectItem>
-                <SelectItem value="oldest">เก่าสุด</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4 md:mb-0">ข่าวสารทั้งหมด</h1>
+              
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">เรียงตาม:</span>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="latest">ล่าสุด</SelectItem>
+                    <SelectItem value="views">ยอดนิยม</SelectItem>
+                    <SelectItem value="oldest">เก่าสุด</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-        {/* Articles Grid */}
+            {/* Articles Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }, (_, i) => (
@@ -115,6 +127,18 @@ export default function News() {
             )}
           </>
         )}
+          </div>
+          
+          {/* Sidebar */}
+          <aside className="lg:col-span-1">
+            <SidebarNewsBanner />
+            <SidebarAdBanner />
+            <NewsPromotionBanner />
+            <WeatherBanner />
+            <SidebarAdBanner />
+          </aside>
+          
+        </div>
       </main>
     </div>
   );
