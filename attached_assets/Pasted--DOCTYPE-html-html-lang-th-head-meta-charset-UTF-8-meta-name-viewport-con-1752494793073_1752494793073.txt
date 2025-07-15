@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข่าววันนี้ - News Today</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 50%, #ffe0b2 100%);
+            color: #333;
+            line-height: 1.6;
+            animation: backgroundShift 10s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 50%, #ffe0b2 100%); }
+            50% { background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 50%, #ffb74d 100%); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Breaking News Ticker */
+        .breaking-news {
+            background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%);
+            color: white;
+            padding: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .breaking-text {
+            animation: scroll-left 30s linear infinite;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        /* Featured Article */
+        .featured-article {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .featured-article::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff9800, #f57c00, #ff9800);
+            background-size: 200% 100%;
+            animation: gradient 2s linear infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .featured-article:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #ffcc80, #ff9800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+            animation: shimmer 4s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .article-content {
+            padding: 1.5rem;
+        }
+
+        .article-title {
+            font-size: 1.8rem;
+            color: #bf360c;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .article-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-excerpt {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid #ff9800;
+            position: relative;
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,152,0,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            border-left-color: #f57c00;
+        }
+
+        .news-card:hover::before {
+            opacity: 1;
+        }
+
+        .news-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #ffe0b2, #ffcc80);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e65100;
+            font-weight: bold;
+        }
+
+        .news-content {
+            padding: 1rem;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            color: #bf360c;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .news-summary {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-title {
+            color: #e65100;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            border-bottom: 2px solid #ffcc80;
+            padding-bottom: 0.5rem;
+        }
+
+        .trending-item {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .trending-item:hover {
+            background: #fff8e1;
+            padding-left: 1rem;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-title {
+            color: #bf360c;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .trending-meta {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .category-btn {
+            background: linear-gradient(45deg, #ffcc80, #ff9800);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .category-btn:hover {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .category-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #ff9800;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ff9800;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .categories {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🗞️ ข่าววันนี้</div>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="#home">หน้าหลัก</a></li>
+                        <li><a href="#news">ข่าวสาร</a></li>
+                        <li><a href="#articles">บทความ</a></li>
+                        <li><a href="#contact">ติดต่อเรา</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breaking News -->
+    <div class="breaking-news">
+        <div class="container">
+            <div class="breaking-text">
+                🔥 ข่าวด่วน: การประชุมสำคัญระดับนานาชาติ • ตลาดหุ้นเอเชียปรับตัวขึ้น • เทคโนโลยี AI ใหม่เปิดตัว • กีฬาโลกเริ่มแข่งขัน
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Categories -->
+        <div class="categories">
+            <a href="#" class="category-btn">ทั้งหมด</a>
+            <a href="#" class="category-btn">การเมือง</a>
+            <a href="#" class="category-btn">เศรษฐกิจ</a>
+            <a href="#" class="category-btn">สังคม</a>
+            <a href="#" class="category-btn">กีฬา</a>
+            <a href="#" class="category-btn">บันเทิง</a>
+            <a href="#" class="category-btn">เทคโนโลยี</a>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Featured Article -->
+                <article class="featured-article">
+                    <div class="featured-image">
+                        📸 ภาพข่าวหลัก
+                    </div>
+                    <div class="article-content">
+                        <h1 class="article-title">ข่าวใหญ่ประจำวัน: การพัฒนาเศรษฐกิจไทยในปี 2025</h1>
+                        <div class="article-meta">
+                            📅 14 กรกฎาคม 2025 • ⏰ 14:30 น. • 👤 ผู้สื่อข่าวเศรษฐกิจ
+                        </div>
+                        <p class="article-excerpt">
+                            รัฐบาลได้ประกาศนโยบายเศรษฐกิจใหม่ที่จะช่วยกระตุ้นการเติบโตของประเทศในปี 2025 โดยเน้นการลงทุนด้านเทคโนโลยีและพลังงานสะอาด การพัฒนาครั้งนี้คาดว่าจะสร้างงานใหม่กว่า 500,000 ตำแหน่ง และเพิ่ม GDP ของประเทศอย่างมีนัยสำคัญ...
+                        </p>
+                    </div>
+                </article>
+
+                <!-- News Grid -->
+                <div class="news-grid">
+                    <article class="news-card">
+                        <div class="news-image">🏛️ การเมือง</div>
+                        <div class="news-content">
+                            <h3 class="news-title">ประชุมสภาผู้แทนราษฎรพิจารณาร่างกฎหมายใหม่</h3>
+                            <p class="news-summary">การประชุมสภาฯ วันนี้มีการพิจารณาร่างกฎหมายสำคัญหลายฉบับ...</p>
+                            <div class="news-time">2 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <div class="news-image">⚽ กีฬา</div>
+                        <div class="news-content">
+                            <h3 class="news-title">ทีมชาติไทยเตรียมสู้ศึกฟุตบอลโลก</h3>
+                            <p class="news-summary">โค้ชทีมชาติประกาศรายชื่อนักเตะ 23 คน...</p>
+                            <div class="news-time">3 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <div class="news-image">💻 เทคโนโลยี</div>
+                        <div class="news-content">
+                            <h3 class="news-title">AI ใหม่ช่วยพัฒนาการศึกษาไทย</h3>
+                            <p class="news-summary">เทคโนโลยีปัญญาประดิษฐ์ล่าสุดจะเข้ามาช่วยพัฒนาระบบการเรียนการสอน...</p>
+                            <div class="news-time">4 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <div class="news-image">🌍 สิ่งแวดล้อม</div>
+                        <div class="news-content">
+                            <h3 class="news-title">โครงการพลังงานสะอาดใหม่เริ่มดำเนินการ</h3>
+                            <p class="news-summary">รัฐบาลเปิดโครงการพลังงานแสงอาทิตย์ขนาดใหญ่...</p>
+                            <div class="news-time">5 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <div class="news-image">🎬 บันเทิง</div>
+                        <div class="news-content">
+                            <h3 class="news-title">ภาพยนตร์ไทยคว้ารางวัลนานาชาติ</h3>
+                            <p class="news-summary">ผลงานของผู้กำกับไทยได้รับการยอมรับในเทศกาลหนังระดับโลก...</p>
+                            <div class="news-time">6 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <div class="news-image">🏥 สุขภาพ</div>
+                        <div class="news-content">
+                            <h3 class="news-title">วัคซีนใหม่ป้องกันไข้หวัดใหญ่</h3>
+                            <p class="news-summary">กระทรวงสาธารณสุขประกาศใช้วัคซีนรุ่นใหม่...</p>
+                            <div class="news-time">7 ชั่วโมงที่แล้ว</div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Trending News -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">🔥 ข่าวฮิต</h2>
+                    <div class="trending-item">
+                        <div class="trending-title">ราคาน้ำมันปรับขึ้น 2 บาท</div>
+                        <div class="trending-meta">👀 15,420 ผู้อ่าน</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-title">นักเรียนไทยคว้าแชมป์วิทยาศาสตร์โลก</div>
+                        <div class="trending-meta">👀 12,850 ผู้อ่าน</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-title">เปิดสนามบินใหม่ภาคเหนือ</div>
+                        <div class="trending-meta">👀 9,630 ผู้อ่าน</div>
+                    </div>
+                    <div class="trending-item">
+                        <div class="trending-title">ค่าเงินบาทแข็งขึ้นต่อเนื่อง</div>
+                        <div class="trending-meta">👀 8,420 ผู้อ่าน</div>
+                    </div>
+                </div>
+
+                <!-- Weather -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">🌤️ สภาพอากาศ</h2>
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="font-size: 2rem; color: #ff9800; margin-bottom: 0.5rem;">☀️</div>
+                        <div style="font-size: 1.5rem; color: #bf360c; font-weight: bold;">32°C</div>
+                        <div style="color: #666; margin-top: 0.5rem;">กรุงเทพฯ - แจ่มใส</div>
+                        <div style="color: #999; font-size: 0.9rem;">ความชื้น 65% • ลม 12 กม./ชม.</div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">📋 เมนูด่วน</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="#" style="color: #bf360c; text-decoration: none; padding: 0.5rem; border-radius: 5px; transition: all 0.3s ease;">📺 ข่าวสด</a>
+                        <a href="#" style="color: #bf360c; text-decoration: none; padding: 0.5rem; border-radius: 5px; transition: all 0.3s ease;">📱 E-Paper</a>
+                        <a href="#" style="color: #bf360c; text-decoration: none; padding: 0.5rem; border-radius: 5px; transition: all 0.3s ease;">🎥 วีดีโอ</a>
+                        <a href="#" style="color: #bf360c; text-decoration: none; padding: 0.5rem; border-radius: 5px; transition: all 0.3s ease;">📊 อินโฟกราฟิก</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>เกี่ยวกับเรา</h3>
+                    <a href="#">ประวัติความเป็นมา</a>
+                    <a href="#">ทีมงาน</a>
+                    <a href="#">ติดต่อเรา</a>
+                    <a href="#">นโยบายความเป็นส่วนตัว</a>
+                </div>
+                <div class="footer-section">
+                    <h3>หมวดข่าว</h3>
+                    <a href="#">การเมือง</a>
+                    <a href="#">เศรษฐกิจ</a>
+                    <a href="#">กีฬา</a>
+                    <a href="#">บันเทิง</a>
+                </div>
+                <div class="footer-section">
+                    <h3>บริการ</h3>
+                    <a href="#">แอพมือถือ</a>
+                    <a href="#">RSS Feed</a>
+                    <a href="#">Newsletter</a>
+                    <a href="#">API สำหรับนักพัฒนา</a>
+                </div>
+                <div class="footer-section">
+                    <h3>ติดตามเรา</h3>
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">🐦 Twitter</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">📺 YouTube</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #444; color: #999;">
+                © 2025 ข่าววันนี้ | สงวนลิขสิทธิ์ทุกประการ
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced interactivity with animations
+        document.querySelectorAll('.news-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // Create floating notification
+                const notification = document.createElement('div');
+                notification.textContent = 'กำลังเปิดข่าว...';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(45deg, #ff9800, #f57c00);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    animation: slideIn 0.5s ease;
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            });
+        });
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Reset all buttons
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.style.background = '';
+                    b.style.transform = '';
+                });
+                
+                // Activate clicked button
+                this.style.background = 'linear-gradient(45deg, #f57c00, #e65100)';
+                this.style.transform = 'scale(1.05)';
+                
+                // Add ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.6);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    left: 50%;
+                    top: 50%;
+                    width: 20px;
+                    height: 20px;
+                    margin-left: -10px;
+                    margin-top: -10px;
+                `;
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes ripple {
+                to { transform: scale(4); opacity: 0; }
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-5px); }
+            }
+            
+            .news-card:nth-child(odd) {
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .news-card:nth-child(even) {
+                animation: float 6s ease-in-out infinite reverse;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Parallax effect for header
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const header = document.querySelector('header');
+            header.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+
+        // Update time every minute with animation
+        setInterval(() => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('th-TH');
+            const metaElement = document.querySelector('.article-meta');
+            
+            metaElement.style.transition = 'opacity 0.3s ease';
+            metaElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                metaElement.innerHTML = 
+                    `📅 ${now.toLocaleDateString('th-TH')} • ⏰ ${timeString} • 👤 ผู้สื่อข่าวเศรษฐกิจ`;
+                metaElement.style.opacity = '1';
+            }, 300);
+        }, 60000);
+
+        // Add hover effects to trending items
+        document.querySelectorAll('.trending-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>
