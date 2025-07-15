@@ -3,3 +3,4 @@
 > NODE_ENV=development tsx server/index.ts
 
 6:14:56 PM [express] serving on port 5000
+6:18:11 PM [express] GET /api/articles 200 in 4ms :: [{"id":2,"title":"บริษัทไทยพัฒนา AI ใหม่ แข่งขั…
