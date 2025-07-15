@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertArticleSchema } from "@shared/schema";
+import { insertContactSchema, insertArticleSchema, insertBannerSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -166,6 +166,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       res.status(500).json({ message: "Failed to send contact message" });
+    }
+  });
+
+  // Banners
+  app.get("/api/banners", async (req, res) => {
+    try {
+      const { position, active } = req.query;
+      const params = {
+        position: position as string,
+        active: active === 'true' ? true : active === 'false' ? false : undefined,
+      };
+      const banners = await storage.getBanners(params);
+      res.json(banners);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch banners" });
+    }
+  });
+
+  app.get("/api/banners/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const banner = await storage.getBannerById(id);
+      if (!banner) {
+        return res.status(404).json({ message: "Banner not found" });
+      }
+      res.json(banner);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch banner" });
+    }
+  });
+
+  // Create Banner
+  app.post("/api/banners", async (req, res) => {
+    try {
+      const validatedData = insertBannerSchema.parse(req.body);
+      const banner = await storage.createBanner(validatedData);
+      res.status(201).json({ message: "สร้างแบนเนอร์สำเร็จ", banner });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "ข้อมูลไม่ถูกต้อง", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create banner" });
+    }
+  });
+
+  // Update Banner
+  app.put("/api/banners/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertBannerSchema.partial().parse(req.body);
+      const banner = await storage.updateBanner(id, validatedData);
+      res.json({ message: "แก้ไขแบนเนอร์สำเร็จ", banner });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "ข้อมูลไม่ถูกต้อง", 
+          errors: error.errors 
+        });
+      }
+      if (error instanceof Error && error.message === "Banner not found") {
+        return res.status(404).json({ message: "ไม่พบแบนเนอร์ที่ต้องการแก้ไข" });
+      }
+      res.status(500).json({ message: "Failed to update banner" });
+    }
+  });
+
+  // Delete Banner
+  app.delete("/api/banners/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBanner(id);
+      res.json({ message: "ลบแบนเนอร์สำเร็จ" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Banner not found") {
+        return res.status(404).json({ message: "ไม่พบแบนเนอร์ที่ต้องการลบ" });
+      }
+      res.status(500).json({ message: "Failed to delete banner" });
     }
   });
 

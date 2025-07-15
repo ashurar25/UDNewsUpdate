@@ -12,14 +12,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { useLocation } from "wouter";
-import { insertArticleSchema } from "@shared/schema";
+import { insertArticleSchema, insertBannerSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { formatDate } from "@/lib/constants";
-import { Plus, Edit, Trash2, Eye, Calendar, User, Hash, LogOut, Shield } from "lucide-react";
-import type { Article, Category } from "@shared/schema";
+import { Plus, Edit, Trash2, Eye, Calendar, User, Hash, LogOut, Shield, Image, Link, MapPin, Clock, ToggleLeft, ToggleRight } from "lucide-react";
+import type { Article, Category, Banner } from "@shared/schema";
 
 const articleFormSchema = insertArticleSchema.extend({
   title: z.string().min(5, "หัวข้อต้องมีอย่างน้อย 5 ตัวอักษร"),
@@ -30,7 +32,19 @@ const articleFormSchema = insertArticleSchema.extend({
   readTime: z.number().min(1, "เวลาอ่านต้องมากกว่า 0 นาที"),
 });
 
+const bannerFormSchema = insertBannerSchema.extend({
+  title: z.string().min(5, "หัวข้อแบนเนอร์ต้องมีอย่างน้อย 5 ตัวอักษร"),
+  imageUrl: z.string().url("URL รูปภาพไม่ถูกต้อง"),
+  linkUrl: z.string().url("URL ลิงก์ไม่ถูกต้อง").optional().or(z.literal("")),
+  position: z.enum(["sidebar", "header", "footer", "content"], {
+    required_error: "กรุณาเลือกตำแหน่งแบนเนอร์",
+  }),
+  description: z.string().optional(),
+  sortOrder: z.number().min(0, "ลำดับการแสดงต้องมากกว่าหรือเท่ากับ 0"),
+});
+
 type ArticleFormData = z.infer<typeof articleFormSchema>;
+type BannerFormData = z.infer<typeof bannerFormSchema>;
 
 export default function Admin() {
   const { toast } = useToast();
@@ -39,6 +53,9 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
+  const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
+  const [activeTab, setActiveTab] = useState("articles");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -57,6 +74,11 @@ export default function Admin() {
     enabled: isAuthenticated,
   });
 
+  const { data: banners = [] } = useQuery<Banner[]>({
+    queryKey: ["/api/banners"],
+    enabled: isAuthenticated,
+  });
+
   const form = useForm<ArticleFormData>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
@@ -70,6 +92,19 @@ export default function Admin() {
       readTime: 3,
       isBreaking: false,
       isFeatured: false,
+    },
+  });
+
+  const bannerForm = useForm<BannerFormData>({
+    resolver: zodResolver(bannerFormSchema),
+    defaultValues: {
+      title: "",
+      imageUrl: "",
+      linkUrl: "",
+      description: "",
+      position: "sidebar",
+      isActive: true,
+      sortOrder: 0,
     },
   });
 
@@ -133,6 +168,67 @@ export default function Admin() {
     },
   });
 
+  // Banner mutations
+  const createBannerMutation = useMutation({
+    mutationFn: (data: BannerFormData) => apiRequest("POST", "/api/banners", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/banners"] });
+      setIsBannerDialogOpen(false);
+      bannerForm.reset();
+      toast({
+        title: "สร้างแบนเนอร์สำเร็จ",
+        description: "แบนเนอร์ใหม่ถูกเพิ่มลงในระบบแล้ว",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: error.message || "ไม่สามารถสร้างแบนเนอร์ได้",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateBannerMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<BannerFormData> }) => 
+      apiRequest("PUT", `/api/banners/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/banners"] });
+      setIsBannerDialogOpen(false);
+      setEditingBanner(null);
+      bannerForm.reset();
+      toast({
+        title: "แก้ไขแบนเนอร์สำเร็จ",
+        description: "ข้อมูลแบนเนอร์ถูกอัพเดทแล้ว",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: error.message || "ไม่สามารถแก้ไขแบนเนอร์ได้",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteBannerMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/banners/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/banners"] });
+      toast({
+        title: "ลบแบนเนอร์สำเร็จ",
+        description: "แบนเนอร์ถูกลบออกจากระบบแล้ว",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: error.message || "ไม่สามารถลบแบนเนอร์ได้",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEdit = (article: Article) => {
     setEditingArticle(article);
     form.reset({
@@ -183,6 +279,34 @@ export default function Admin() {
     form.setValue("slug", slug);
   };
 
+  const handleEditBanner = (banner: Banner) => {
+    setEditingBanner(banner);
+    bannerForm.reset({
+      title: banner.title,
+      imageUrl: banner.imageUrl,
+      linkUrl: banner.linkUrl || "",
+      description: banner.description || "",
+      position: banner.position as "sidebar" | "header" | "footer" | "content",
+      isActive: banner.isActive,
+      sortOrder: banner.sortOrder || 0,
+    });
+    setIsBannerDialogOpen(true);
+  };
+
+  const onBannerSubmit = (data: BannerFormData) => {
+    if (editingBanner) {
+      updateBannerMutation.mutate({ id: editingBanner.id, data });
+    } else {
+      createBannerMutation.mutate(data);
+    }
+  };
+
+  const handleDeleteBanner = (id: number) => {
+    if (confirm("คุณแน่ใจหรือไม่ที่จะลบแบนเนอร์นี้?")) {
+      deleteBannerMutation.mutate(id);
+    }
+  };
+
   const getCategoryById = (id: number) => {
     return categories.find(cat => cat.id === id);
   };
@@ -204,8 +328,8 @@ export default function Admin() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">จัดการข่าวสาร</h1>
-            <p className="text-gray-600 mt-2">เพิ่ม แก้ไข และจัดการข่าวสารของเว็บไซต์</p>
+            <h1 className="text-3xl font-bold text-gray-900">จัดการระบบ</h1>
+            <p className="text-gray-600 mt-2">เพิ่ม แก้ไข และจัดการข่าวสารและแบนเนอร์ของเว็บไซต์</p>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -223,6 +347,21 @@ export default function Admin() {
               <LogOut className="h-4 w-4 mr-2" />
               ออกจากระบบ
             </Button>
+          </div>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="articles">จัดการข่าวสาร</TabsTrigger>
+            <TabsTrigger value="banners">จัดการแบนเนอร์</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="articles" className="space-y-4">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold">จัดการข่าวสาร</h2>
+                <p className="text-gray-600 text-sm">เพิ่ม แก้ไข และจัดการข่าวสารของเว็บไซต์</p>
+              </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button 
@@ -552,6 +691,274 @@ export default function Admin() {
             )}
           </CardContent>
         </Card>
+      </TabsContent>
+
+      <TabsContent value="banners" className="space-y-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold">จัดการแบนเนอร์</h2>
+            <p className="text-gray-600 text-sm">เพิ่ม แก้ไข และจัดการแบนเนอร์ของเว็บไซต์</p>
+          </div>
+          <Dialog open={isBannerDialogOpen} onOpenChange={setIsBannerDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                className="bg-ud-orange hover:bg-ud-orange-dark text-white"
+                onClick={() => {
+                  setEditingBanner(null);
+                  bannerForm.reset();
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                เพิ่มแบนเนอร์ใหม่
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingBanner ? "แก้ไขแบนเนอร์" : "เพิ่มแบนเนอร์ใหม่"}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <Form {...bannerForm}>
+                <form onSubmit={bannerForm.handleSubmit(onBannerSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 gap-6">
+                    <FormField
+                      control={bannerForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>หัวข้อแบนเนอร์ *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="กรอกหัวข้อแบนเนอร์" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={bannerForm.control}
+                      name="imageUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL รูปภาพ *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/image.jpg" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={bannerForm.control}
+                        name="position"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ตำแหน่งแบนเนอร์ *</FormLabel>
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="เลือกตำแหน่ง" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="sidebar">Sidebar (ด้านข้าง)</SelectItem>
+                                <SelectItem value="header">Header (ด้านบน)</SelectItem>
+                                <SelectItem value="footer">Footer (ด้านล่าง)</SelectItem>
+                                <SelectItem value="content">Content (ในเนื้อหา)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={bannerForm.control}
+                        name="sortOrder"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ลำดับการแสดง</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                placeholder="0" 
+                                {...field}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={bannerForm.control}
+                      name="linkUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL ลิงก์ (ไม่บังคับ)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={bannerForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>คำอธิบาย (ไม่บังคับ)</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="กรอกคำอธิบายแบนเนอร์"
+                              rows={3}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={bannerForm.control}
+                      name="isActive"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">สถานะการแสดง</FormLabel>
+                            <div className="text-sm text-gray-600">
+                              เปิดใช้งานแบนเนอร์นี้หรือไม่
+                            </div>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsBannerDialogOpen(false)}
+                    >
+                      ยกเลิก
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="bg-ud-orange hover:bg-ud-orange-dark text-white"
+                      disabled={createBannerMutation.isPending || updateBannerMutation.isPending}
+                    >
+                      {editingBanner ? "บันทึกการแก้ไข" : "เพิ่มแบนเนอร์"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Image className="h-5 w-5" />
+              <span>รายการแบนเนอร์</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {banners.length > 0 ? (
+              <div className="space-y-4">
+                {banners.map((banner) => (
+                  <div
+                    key={banner.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <img 
+                        src={banner.imageUrl} 
+                        alt={banner.title}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-lg">{banner.title}</h4>
+                        {banner.description && (
+                          <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                            {banner.description}
+                          </p>
+                        )}
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <div className="flex items-center space-x-1">
+                            <MapPin className="h-4 w-4" />
+                            <span>{banner.position}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Hash className="h-4 w-4" />
+                            <span>ลำดับ: {banner.sortOrder}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            {banner.isActive ? (
+                              <ToggleRight className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <ToggleLeft className="h-4 w-4 text-gray-400" />
+                            )}
+                            <span>{banner.isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</span>
+                          </div>
+                          {banner.linkUrl && (
+                            <div className="flex items-center space-x-1">
+                              <Link className="h-4 w-4" />
+                              <span>มีลิงก์</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 ml-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditBanner(banner)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        แก้ไข
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteBanner(banner.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        ลบ
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">🎨</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">ยังไม่มีแบนเนอร์</h3>
+                <p className="text-gray-600">เริ่มต้นด้วยการเพิ่มแบนเนอร์ใหม่</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      </Tabs>
       </main>
     </div>
   );

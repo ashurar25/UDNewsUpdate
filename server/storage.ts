@@ -1,4 +1,4 @@
-import { categories, articles, contacts, type Category, type Article, type Contact, type InsertCategory, type InsertArticle, type InsertContact } from "@shared/schema";
+import { categories, articles, contacts, banners, type Category, type Article, type Contact, type Banner, type InsertCategory, type InsertArticle, type InsertContact, type InsertBanner } from "@shared/schema";
 
 export interface IStorage {
   // Categories
@@ -22,23 +22,34 @@ export interface IStorage {
   // Article Management
   updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article>;
   deleteArticle(id: number): Promise<void>;
+
+  // Banners
+  getBanners(params?: { position?: string; active?: boolean }): Promise<Banner[]>;
+  getBannerById(id: number): Promise<Banner | undefined>;
+  createBanner(banner: InsertBanner): Promise<Banner>;
+  updateBanner(id: number, banner: Partial<InsertBanner>): Promise<Banner>;
+  deleteBanner(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private categories: Map<number, Category>;
   private articles: Map<number, Article>;
   private contacts: Map<number, Contact>;
+  private banners: Map<number, Banner>;
   private categoryIdCounter: number;
   private articleIdCounter: number;
   private contactIdCounter: number;
+  private bannerIdCounter: number;
 
   constructor() {
     this.categories = new Map();
     this.articles = new Map();
     this.contacts = new Map();
+    this.banners = new Map();
     this.categoryIdCounter = 1;
     this.articleIdCounter = 1;
     this.contactIdCounter = 1;
+    this.bannerIdCounter = 1;
 
     this.initializeData();
   }
@@ -285,6 +296,69 @@ export class MemStorage implements IStorage {
       throw new Error("Article not found");
     }
     this.articles.delete(id);
+  }
+
+  // Banner methods
+  async getBanners(params?: { position?: string; active?: boolean }): Promise<Banner[]> {
+    let banners = Array.from(this.banners.values());
+    
+    if (params?.position) {
+      banners = banners.filter(banner => banner.position === params.position);
+    }
+    
+    if (params?.active !== undefined) {
+      banners = banners.filter(banner => banner.isActive === params.active);
+    }
+    
+    // Filter by date range if specified
+    const now = new Date();
+    banners = banners.filter(banner => {
+      const isStartValid = !banner.startDate || banner.startDate <= now;
+      const isEndValid = !banner.endDate || banner.endDate >= now;
+      return isStartValid && isEndValid;
+    });
+    
+    return banners.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  }
+
+  async getBannerById(id: number): Promise<Banner | undefined> {
+    return this.banners.get(id);
+  }
+
+  async createBanner(banner: InsertBanner): Promise<Banner> {
+    const newBanner: Banner = {
+      id: this.bannerIdCounter++,
+      ...banner,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isActive: banner.isActive !== undefined ? banner.isActive : true,
+      sortOrder: banner.sortOrder !== undefined ? banner.sortOrder : 0,
+    };
+    this.banners.set(newBanner.id, newBanner);
+    return newBanner;
+  }
+
+  async updateBanner(id: number, updates: Partial<InsertBanner>): Promise<Banner> {
+    const existingBanner = this.banners.get(id);
+    if (!existingBanner) {
+      throw new Error("Banner not found");
+    }
+    
+    const updatedBanner: Banner = {
+      ...existingBanner,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    this.banners.set(id, updatedBanner);
+    return updatedBanner;
+  }
+
+  async deleteBanner(id: number): Promise<void> {
+    if (!this.banners.has(id)) {
+      throw new Error("Banner not found");
+    }
+    this.banners.delete(id);
   }
 }
 

@@ -11,6 +11,7 @@ import type { Article, Category } from "@shared/schema";
 import { SidebarNewsBanner } from "@/components/banners/sidebar-news-banner";
 import { SidebarAdBanner, HeaderAdBanner, MobileAdBanner } from "@/components/banners/google-ad-banner";
 import { NewsPromotionBanner, WeatherBanner, SocialMediaBanner } from "@/components/banners/news-promotion-banner";
+import { SidebarCustomBanner, HeaderCustomBanner, ContentCustomBanner } from "@/components/banners/custom-banner";
 
 export default function Home() {
   const { data: featuredArticle } = useQuery<Article>({
@@ -41,6 +42,7 @@ export default function Home() {
 
       {/* Header Advertisement */}
       <div className="container mx-auto px-4 py-4">
+        <HeaderCustomBanner />
         <HeaderAdBanner />
       </div>
 
@@ -88,6 +90,7 @@ export default function Home() {
             
             {/* Content Ad Banner */}
             <div className="mb-8">
+              <ContentCustomBanner />
               <HeaderAdBanner />
             </div>
           </div>
@@ -97,6 +100,9 @@ export default function Home() {
             
             {/* Mobile Ad Banner */}
             <MobileAdBanner />
+            
+            {/* Custom Banners */}
+            <SidebarCustomBanner />
             
             {/* Sidebar News Banner */}
             <SidebarNewsBanner />

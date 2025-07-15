@@ -9,6 +9,7 @@ import type { Article, Category } from "@shared/schema";
 import { HeaderAdBanner, SidebarAdBanner } from "@/components/banners/google-ad-banner";
 import { SidebarNewsBanner } from "@/components/banners/sidebar-news-banner";
 import { WeatherBanner, NewsPromotionBanner } from "@/components/banners/news-promotion-banner";
+import { SidebarCustomBanner, HeaderCustomBanner } from "@/components/banners/custom-banner";
 
 export default function News() {
   const [sortBy, setSortBy] = useState<string>("latest");
@@ -53,6 +54,7 @@ export default function News() {
       
       {/* Header Advertisement */}
       <div className="container mx-auto px-4 py-4">
+        <HeaderCustomBanner />
         <HeaderAdBanner />
       </div>
 
@@ -131,6 +133,7 @@ export default function News() {
           
           {/* Sidebar */}
           <aside className="lg:col-span-1">
+            <SidebarCustomBanner />
             <SidebarNewsBanner />
             <SidebarAdBanner />
             <NewsPromotionBanner />
