@@ -18,19 +18,28 @@ export function GoogleAdBanner({ adSlot, adSize, className = "" }: GoogleAdBanne
   const size = adSizes[adSize];
 
   useEffect(() => {
-    // Load Google AdSense script
+    // Skip loading Google AdSense in development mode
+    if (import.meta.env.DEV) {
+      return;
+    }
+
+    // Load Google AdSense script only in production
     const script = document.createElement('script');
     script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
     script.async = true;
+    script.onload = () => {
+      // Initialize ads after script loads
+      try {
+        // @ts-ignore
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (error) {
+        console.error('AdSense initialization error:', error);
+      }
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google AdSense script');
+    };
     document.head.appendChild(script);
-
-    // Initialize ads
-    try {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (error) {
-      console.error('AdSense initialization error:', error);
-    }
   }, []);
 
   return (
@@ -39,17 +48,19 @@ export function GoogleAdBanner({ adSlot, adSize, className = "" }: GoogleAdBanne
         <div className="text-center">
           <div className="text-xs text-gray-500 mb-2">โฆษณา</div>
           
-          {/* Google AdSense */}
-          <ins
-            className="adsbygoogle"
-            style={{ display: 'block', width: size.width, height: size.height }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // Replace with your AdSense publisher ID
-            data-ad-slot={adSlot}
-            data-ad-format="auto"
-            data-full-width-responsive="true"
-          ></ins>
+          {/* Google AdSense - Only in production */}
+          {!import.meta.env.DEV && (
+            <ins
+              className="adsbygoogle"
+              style={{ display: 'block', width: size.width, height: size.height }}
+              data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // Replace with your AdSense publisher ID
+              data-ad-slot={adSlot}
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            ></ins>
+          )}
           
-          {/* Fallback/Demo Ad */}
+          {/* Fallback/Demo Ad - Always show in development */}
           <div 
             className="bg-gradient-to-br from-blue-100 to-blue-200 border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center text-blue-600 font-medium"
             style={{ width: size.width, height: size.height }}
@@ -58,6 +69,9 @@ export function GoogleAdBanner({ adSlot, adSize, className = "" }: GoogleAdBanne
               <div className="text-2xl mb-2">📢</div>
               <div className="text-sm">พื้นที่โฆษณา</div>
               <div className="text-xs opacity-75">{size.width}x{size.height}</div>
+              {import.meta.env.DEV && (
+                <div className="text-xs text-blue-500 mt-1">Development Mode</div>
+              )}
             </div>
           </div>
         </div>
