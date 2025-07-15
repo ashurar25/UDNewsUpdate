@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(16, 100%, 61%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(15, 100%, 80%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(35, 100%, 94%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(16, 99%, 65%);
+  --primary-foreground: hsl(32, 94%, 93%);
+  --secondary: hsl(48, 100%, 64%);
+  --secondary-foreground: hsl(20, 14.3%, 4.1%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* UD News Colors */
+  --ud-orange: hsl(16, 99%, 64%);
+  --ud-orange-light: hsl(16, 99%, 62%);
+  --ud-orange-dark: hsl(16, 100%, 63%);
+  --ud-yellow: hsl(48, 100%, 64%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(32, 100%, 50%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-thai antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-thai {
+    font-family: 'Sarabun', 'Prompt', sans-serif;
+  }
+
+  .text-ud-orange {
+    color: var(--ud-orange);
+  }
+
+  .text-ud-yellow {
+    color: var(--ud-yellow);
+  }
+
+  .bg-ud-orange {
+    background-color: var(--ud-orange);
+  }
+
+  .bg-ud-orange-light {
+    background-color: var(--ud-orange-light);
+  }
+
+  .bg-ud-orange-dark {
+    background-color: var(--ud-orange-dark);
+  }
+
+  .bg-ud-yellow {
+    background-color: var(--ud-yellow);
+  }
+
+  .border-ud-orange {
+    border-color: var(--ud-orange);
+  }
+
+  .hover\:bg-ud-orange:hover {
+    background-color: var(--ud-orange);
+  }
+
+  .hover\:bg-ud-orange-dark:hover {
+    background-color: var(--ud-orange-dark);
+  }
+
+  .hover\:text-ud-yellow:hover {
+    color: var(--ud-yellow);
+  }
+
+  .hover\:text-ud-orange:hover {
+    color: var(--ud-orange);
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Custom animations */
+@keyframes scroll-left {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 4s infinite;
+}
+
+.news-card-hover {
+  transition: all 0.3s ease;
+}
+
+.news-card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* Breaking news ticker */
+.breaking-ticker {
+  animation: scroll-left 30s linear infinite;
+}
+
+/* Mobile menu animation */
+.mobile-menu {
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu.active {
+  transform: translateX(0);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Banner hover effects */
+.banner-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* News card hover effects */
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Ad banner shimmer effect */
+.ad-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer-wave 2s infinite;
+}
+
+@keyframes shimmer-wave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .banner-mobile {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .ad-banner,
+  .sidebar-banner,
+  .news-ticker {
+    display: none !important;
+  }
+}

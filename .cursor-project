@@ -1,0 +1,7 @@
+{
+  "repository": "ashurar25/udnewsupdate",
+  "name": "UDNewsUpdate",
+  "description": "Thai News Website - อัพเดทข่าวฮอต",
+  "type": "web-application",
+  "framework": "React + Express.js"
+}
